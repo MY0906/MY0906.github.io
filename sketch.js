@@ -117,6 +117,7 @@ function keyPressed() {
   if (key === '6') waveType = 'square';
   if (key === '7') waveType = 'triangle';
   if (key === '8') waveType = 'sawtooth';
+  if (key === '9') waveType = 'sine';
 
   // ジャンプ処理
   if (key === 'w' || key === 'W') {
@@ -361,14 +362,6 @@ function drawUI() {
   strokeWeight(3);
   textSize(16);
   textAlign(LEFT, TOP);
-
-  let controlsText = `
-  [A][D]: Move Melody Snowman
-  [W]: Jump
-  [←][→]: Move Panning Snowman
-  [1]~[5]: Change Mode
-  [6]~[8]: Change Waveform`;
-  text(controlsText, 10, 10);
 
   textAlign(RIGHT, TOP);
   let statusText = `

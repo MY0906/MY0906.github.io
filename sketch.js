@@ -403,14 +403,16 @@ function playSnowSound(note, panValue, amp, waveTypeOverride) {
 
 // 和音で鳴らす
 function playChordForSnows(snows) {
-  // パン雪だるまの位置でcurrentNotesのルートインデックスを決める
-  const panMinX = width * SETTINGS.PAN_SNOWMAN_MIN_X_RATIO;
-  const panMaxX = width * SETTINGS.PAN_SNOWMAN_MAX_X_RATIO;
-  let panRatio = map(panSnowmanX, panMinX, panMaxX, 0, 1);
-  panRatio = constrain(panRatio, 0, 1);
-  let rootIdx = Math.floor(panRatio * (currentNotes.length - 1));
+  // メロディ雪だるまの位置でcurrentNotesのルートインデックスを決める
+  const melodyMinX = width * SETTINGS.MELODY_SNOWMAN_MIN_X_RATIO;
+  const melodyMaxX = width * SETTINGS.MELODY_SNOWMAN_MAX_X_RATIO;
+  let melodyRatio = map(melodySnowmanX, melodyMinX, melodyMaxX, 0, 1);
+  melodyRatio = constrain(melodyRatio, 0, 1);
+  let rootIdx = Math.floor(melodyRatio * (currentNotes.length - 1));
 
   // 和音の割り当てはルートから順に(currentNotes.lengthでループ)
+  const panMinX = width * SETTINGS.PAN_SNOWMAN_MIN_X_RATIO;
+  const panMaxX = width * SETTINGS.PAN_SNOWMAN_MAX_X_RATIO;
   for (let i = 0; i < snows.length; i++) {
     let noteIdx = (rootIdx + i) % currentNotes.length;
     let note = currentNotes[noteIdx];

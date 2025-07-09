@@ -403,19 +403,23 @@ function playSnowSound(note, panValue, amp, waveTypeOverride) {
 
 // 和音で鳴らす
 function playChordForSnows(snows) {
-  // 雪玉の数だけcurrentNotesから順に音を割り当てる
+  // パン雪だるまの位置でcurrentNotesのルートインデックスを決める
+  const panMinX = width * SETTINGS.PAN_SNOWMAN_MIN_X_RATIO;
+  const panMaxX = width * SETTINGS.PAN_SNOWMAN_MAX_X_RATIO;
+  let panRatio = map(panSnowmanX, panMinX, panMaxX, 0, 1);
+  panRatio = constrain(panRatio, 0, 1);
+  let rootIdx = Math.floor(panRatio * (currentNotes.length - 1));
+
+  // 和音の割り当てはルートから順に(currentNotes.lengthでループ)
   for (let i = 0; i < snows.length; i++) {
-    let noteIdx = i % currentNotes.length;
+    let noteIdx = (rootIdx + i) % currentNotes.length;
     let note = currentNotes[noteIdx];
     // パンはパン雪だるまの位置から
-    const panMinX = width * SETTINGS.PAN_SNOWMAN_MIN_X_RATIO;
-    const panMaxX = width * SETTINGS.PAN_SNOWMAN_MAX_X_RATIO;
     let panValue = map(panSnowmanX, panMinX, panMaxX, -1.0, 1.0);
     panValue = constrain(panValue, -1.0, 1.0);
     // 音量は雪玉の落下速度で変化（平均値）
     let vy = snows[i].vy;
     let amp = map(vy, 0, 5, 0.2, 0.7, true);
-    // 波形はグローバル設定
     playSnowSound(note, panValue, amp);
   }
 }

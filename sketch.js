@@ -154,7 +154,7 @@ function setup() {
   // 音声エンベロープの初期化（エラーハンドリング付き）
   try {
     env = new p5.Envelope();
-    env.setADSR(0.05, 0.2, 0.2, 0.5); // リリースを長くして自然な減衰に
+    env.setADSR(0.05, 0.2, 0.2, 0.3); // リリースを元に戻す
     env.setRange(0.5, 0);
   } catch (error) {
     console.log('音声初期化エラー:', error);
@@ -371,25 +371,27 @@ function drawUI() {
 }
 
 // playSnowSoundは単音用に変更
-function playSnowSound(note, panValue, amp, waveTypeOverride) {
+function playSnowSound(note, panValue, amp, waveTypeOverride, delay = 0) {
   if (!env) return;
   // 同時発音数を増やして、より多くの音を同時に鳴らせるように
   if (activeOscillators.length >= 8) {
     let oldOsc = activeOscillators.shift();
     oldOsc.stop();
   }
-  try {
-    let osc = new p5.Oscillator(waveTypeOverride || waveType);
-    osc.pan(panValue);
-    osc.freq(note);
-    osc.amp(env);
-    osc.start();
-    env.play(osc, 0, 0.1);
-    osc.stop(1.5); // 停止時間を少し長く
-    activeOscillators.push(osc);
-  } catch (error) {
-    console.log('音声再生エラー:', error);
-  }
+  setTimeout(() => {
+    try {
+      let osc = new p5.Oscillator(waveTypeOverride || waveType);
+      osc.pan(panValue);
+      osc.freq(note);
+      osc.amp(env);
+      osc.start();
+      env.play(osc, 0, 0.1);
+      osc.stop(1.2); // 停止時間を元に戻す
+      activeOscillators.push(osc);
+    } catch (error) {
+      console.log('音声再生エラー:', error);
+    }
+  }, delay);
 }
 
 // 和音で鳴らす
@@ -413,7 +415,8 @@ function playChordForSnows(snows) {
     // 音量は雪玉の落下速度で変化（平均値）
     let vy = snows[i].vy;
     let amp = map(vy, 0, 5, 0.2, 0.7, true);
-    playSnowSound(note, panValue, amp);
+    // 各音に10msずつ遅延を追加（音が重なりすぎることを防ぐ）
+    playSnowSound(note, panValue, amp, null, i * 10);
   }
 }
 
